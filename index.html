@@ -1,0 +1,1546 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>몬스테라 키우기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=Hahmlet:wght@600;800&display=swap">
+<style>
+/* Layout: one-screen phone column — room scene with the pot, growth line, four care gauges, action tray at thumb height */
+:root {
+  --bg: #E8EEE5;
+  --surface: #F8FBF5;
+  --paper: #FFFDF6;
+  --ink: #17251D;
+  --ink-soft: #506157;
+  --line: #C9D5C6;
+  --leaf: #2D6943;
+  --leaf-deep: #1E4B30;
+  --leaf-new: #A3CF5E;
+  --sun: #C98A12;
+  --sun-soft: #F6E7C3;
+  --good: #2F8150;
+  --warn: #B86A12;
+  --bad: #B23E35;
+  --good-soft: #DDEFE2;
+  --warn-soft: #F7E6CF;
+  --bad-soft: #F6DDDA;
+  --room-wall: #DCE5D6;
+  --room-floor: #CDBA9C;
+  --font-display: "Hahmlet", "Nanum Myeongjo", "AppleMyungjo", serif;
+  --font-body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-hand: "Gaegu", "Gowun Dodum", "Apple SD Gothic Neo", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1511; --surface: #16211B; --paper: #1D2A22; --ink: #E3ECE4; --ink-soft: #9BAEA1; --line: #2B3B32;
+    --leaf: #4C9666; --leaf-deep: #2D6A45; --leaf-new: #ABD86B; --sun: #E8B54A; --sun-soft: #3A3020;
+    --good: #62BC83; --warn: #E5A04E; --bad: #EA7368; --good-soft: #1C3326; --warn-soft: #3A2C1A; --bad-soft: #3D2220;
+    --room-wall: #1C2721; --room-floor: #2E271E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1511; --surface: #16211B; --paper: #1D2A22; --ink: #E3ECE4; --ink-soft: #9BAEA1; --line: #2B3B32;
+  --leaf: #4C9666; --leaf-deep: #2D6A45; --leaf-new: #ABD86B; --sun: #E8B54A; --sun-soft: #3A3020;
+  --good: #62BC83; --warn: #E5A04E; --bad: #EA7368; --good-soft: #1C3326; --warn-soft: #3A2C1A; --bad-soft: #3D2220;
+  --room-wall: #1C2721; --room-floor: #2E271E;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+.app {
+  box-sizing: border-box; min-height: 100%; max-width: 540px; margin: 0 auto;
+  padding-inline: 16px; padding-block: 12px 14px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { min-width: 0; }
+.brand h1 {
+  margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem;
+  line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance;
+}
+.brand .sub { margin: 2px 0 0; font-size: 0.82rem; color: var(--ink-soft); }
+.wallet { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.chip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line); font-size: 0.9rem; font-variant-numeric: tabular-nums;
+}
+.chip svg { width: 16px; height: 16px; flex-shrink: 0; }
+.icon-btn {
+  display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; padding: 0;
+}
+.icon-btn svg, .act svg, .chip svg.stroke {
+  fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.icon-btn svg { width: 20px; height: 20px; }
+
+.scene {
+  position: relative; flex: 1 1 auto; min-height: 290px; border-radius: 22px; overflow: hidden;
+  background: var(--room-wall); border: 1px solid var(--line);
+}
+.scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: manipulation; cursor: pointer; }
+.scene-top {
+  position: absolute; top: 10px; left: 10px; right: 10px;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; pointer-events: none;
+}
+.scene-top > * { pointer-events: auto; }
+.spot-chip {
+  font: inherit; font-size: 0.78rem; padding: 5px 10px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line); color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+.save-chip {
+  font-size: 0.72rem; padding: 5px 9px; border-radius: 999px; color: var(--ink-soft); white-space: nowrap;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+}
+.note {
+  margin: -4px 0 0; padding: 6px 12px 7px; border-radius: 4px 14px 14px 14px;
+  background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--good);
+  font-family: var(--font-hand); font-size: 1.15rem; line-height: 1.25; color: var(--ink);
+}
+.note[data-tone="warn"] { border-left-color: var(--warn); }
+.note[data-tone="bad"] { border-left-color: var(--bad); }
+.toast {
+  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
+  width: max-content; max-width: calc(100% - 28px); box-sizing: border-box;
+  padding: 8px 14px; border-radius: 12px; text-align: center; font-size: 0.88rem;
+  background: var(--ink); color: var(--bg); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+.toast[data-tone="warn"] { background: var(--warn-soft); color: var(--ink); box-shadow: inset 4px 0 0 var(--warn), 0 6px 18px rgba(0,0,0,.14); }
+.toast[data-tone="bad"] { background: var(--bad-soft); color: var(--ink); box-shadow: inset 4px 0 0 var(--bad), 0 6px 18px rgba(0,0,0,.14); }
+
+.growth { display: grid; gap: 6px; }
+.growth-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.growth-head h2 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.06rem; text-wrap: balance; }
+.leafcount { font-variant-numeric: tabular-nums; color: var(--ink-soft); font-size: 0.88rem; white-space: nowrap; }
+.bar { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--leaf), var(--leaf-new)); transition: width 0.6s; }
+.bar[data-blocked="1"] i { background: var(--warn); }
+.growth-sub { margin: 0; font-size: 0.82rem; color: var(--ink-soft); }
+
+.gauges { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+.gauge { display: grid; gap: 5px; min-width: 0; }
+.g-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.g-label { font-size: 0.86rem; white-space: nowrap; }
+.g-right { display: inline-flex; align-items: center; gap: 6px; }
+.g-val { font-size: 0.86rem; font-variant-numeric: tabular-nums; }
+.g-state {
+  font-size: 0.7rem; padding: 1px 7px; border-radius: 999px; white-space: nowrap;
+  background: var(--good-soft); color: var(--good);
+}
+.gauge[data-l="warn"] .g-state { background: var(--warn-soft); color: var(--warn); }
+.gauge[data-l="bad"] .g-state { background: var(--bad-soft); color: var(--bad); }
+.gauge[data-l="ok"] .g-state { background: var(--line); color: var(--ink-soft); }
+.g-bar { position: relative; height: 7px; border-radius: 999px; background: var(--line); }
+.g-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: inherit; background: var(--good); transition: width 0.5s; }
+.gauge[data-l="warn"] .g-bar i { background: var(--warn); }
+.gauge[data-l="bad"] .g-bar i { background: var(--bad); }
+.gauge[data-l="ok"] .g-bar i { background: var(--ink-soft); }
+.g-band { position: absolute; top: -2px; bottom: -2px; border-left: 2px solid var(--ink-soft); border-right: 2px solid var(--ink-soft); opacity: 0.5; z-index: 1; }
+
+.banners { display: grid; gap: 8px; }
+.banners:empty { display: none; }
+.banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+  padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); font: inherit; font-size: 0.92rem; text-align: left; cursor: pointer;
+}
+.banner[data-tone="sun"] { background: var(--sun-soft); border-color: transparent; }
+.banner[data-tone="bad"] { background: var(--bad-soft); border-color: transparent; }
+.banner[data-tone="warn"] { background: var(--warn-soft); border-color: transparent; }
+.banner[data-tone="good"] { background: var(--good-soft); border-color: transparent; }
+.banner .go { font-weight: 700; white-space: nowrap; }
+
+.tray { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+@media (min-width: 560px) { .tray { grid-template-columns: repeat(6, 1fr); } }
+.act {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-height: 62px; padding: 8px 4px; border-radius: 16px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); font: inherit; font-size: 0.86rem; cursor: pointer;
+  transition: transform 0.12s, background 0.2s, border-color 0.2s;
+}
+.act svg { width: 24px; height: 24px; }
+.act:active { transform: scale(0.96); }
+.act[data-hint="1"] { border-color: var(--warn); background: var(--warn-soft); }
+.act .badge {
+  position: absolute; top: 6px; right: 8px; min-width: 18px; padding: 0 5px; border-radius: 999px;
+  font-size: 0.7rem; line-height: 1.5; background: var(--leaf); color: var(--surface); font-variant-numeric: tabular-nums;
+}
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+
+.sheet-wrap { position: fixed; inset: 0; z-index: 10; display: flex; align-items: flex-end; justify-content: center; }
+.backdrop { position: absolute; inset: 0; background: rgba(8, 14, 10, 0.45); }
+.sheet {
+  position: relative; box-sizing: border-box; width: 100%; max-width: 540px; max-height: 86%; overflow: auto;
+  background: var(--surface); color: var(--ink); border-radius: 22px 22px 0 0;
+  padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+}
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.sheet-head h3 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; text-wrap: balance; }
+.sheet h4 { margin: 18px 0 8px; font-family: var(--font-display); font-weight: 600; font-size: 0.98rem; }
+.sheet p { margin: 0 0 10px; }
+.lead { color: var(--ink-soft); }
+.primary {
+  width: 100%; margin-top: 8px; padding: 13px 16px; border-radius: 14px; border: 0;
+  background: var(--leaf); color: var(--surface); font: inherit; font-weight: 700; font-size: 1rem; cursor: pointer;
+}
+.secondary {
+  width: 100%; margin-top: 8px; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--line);
+  background: transparent; color: var(--ink); font: inherit; font-size: 0.95rem; cursor: pointer;
+}
+.secondary.danger { color: var(--bad); border-color: var(--bad-soft); }
+.secondary.danger[data-armed="1"] { background: var(--bad-soft); }
+.rules { margin: 0 0 8px; padding: 0; list-style: none; display: grid; gap: 8px; }
+.rules li { display: grid; grid-template-columns: 76px 1fr; gap: 10px; font-size: 0.94rem; }
+.rules b { font-family: var(--font-display); font-weight: 600; color: var(--leaf); }
+.wallet-line { display: flex; justify-content: space-between; color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 4px; }
+.shop-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.si-text { display: grid; gap: 2px; min-width: 0; }
+.si-text span { font-size: 0.84rem; color: var(--ink-soft); }
+.buy {
+  flex-shrink: 0; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--leaf); background: transparent;
+  color: var(--leaf); font: inherit; font-weight: 700; cursor: pointer; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.buy:disabled { opacity: 0.45; cursor: not-allowed; }
+.owned { flex-shrink: 0; font-size: 0.86rem; color: var(--good); white-space: nowrap; }
+.spots { display: grid; gap: 8px; }
+.spot-opt {
+  display: grid; gap: 3px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 14px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; cursor: pointer;
+}
+.spot-opt[aria-pressed="true"] { border: 2px solid var(--leaf); background: var(--good-soft); }
+.spot-opt b { font-family: var(--font-display); font-weight: 600; }
+.spot-opt .lux { font-size: 0.8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.spot-opt .desc { font-size: 0.86rem; }
+.list { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; font-size: 0.92rem; }
+.summary { display: grid; gap: 0; margin: 0 0 14px; padding: 0; list-style: none; }
+.summary li { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.summary li span { color: var(--ink-soft); }
+.hand { font-family: var(--font-hand); font-size: 1.18rem; line-height: 1.3; }
+.muted { color: var(--ink-soft); font-size: 0.9rem; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand">
+      <h1>몬스테라 키우기</h1>
+      <p class="sub" id="sub">함께한 지 1일째 · 1세대</p>
+    </div>
+    <div class="wallet">
+      <span class="chip" title="코인">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--sun)"/><path d="M8 4.2c-2 1.4-2.6 4.4-.2 7.4 2.4-3 1.8-6-.2-7.4zM8 5.5v6" fill="none" stroke="var(--surface)" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span class="sr">코인</span> <b id="coins">0</b>
+      </span>
+      <span class="chip" title="영양제">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 1.5h3v2l1.5 2.2v7.3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 5 13V5.7l1.5-2.2z" fill="var(--leaf-new)" stroke="var(--leaf)" stroke-width="1"/></svg>
+        <span class="sr">영양제</span> <b id="feedCount">0</b>
+      </span>
+      <button class="icon-btn" id="btnInfo" type="button" aria-label="몬스테라 노트와 기록">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/><path d="M9 7h6M9 10.5h4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section class="scene" id="scene" aria-label="몬스테라가 있는 방">
+    <canvas id="cv" role="img" aria-label="몬스테라 화분"></canvas>
+    <div class="scene-top">
+      <button class="spot-chip" id="spotChip" type="button">커튼 친 창가 · 약 2,000 lux</button>
+      <span class="save-chip" id="saveChip">이 기기에 저장</span>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </section>
+
+  <p class="note" id="note" data-tone="good">잘 자라고 있어요.</p>
+
+  <section class="growth" aria-label="자람">
+    <div class="growth-head">
+      <h2 id="stageName">1단계 · 새싹</h2>
+      <span class="leafcount" id="leafCount">잎 1 / 15</span>
+    </div>
+    <div class="bar" id="growBarWrap"><i id="growBar"></i></div>
+    <p class="growth-sub" id="growSub">다음 잎까지 0%</p>
+  </section>
+
+  <section class="gauges" aria-label="돌봄 상태">
+    <div class="gauge" id="g-m"><div class="g-head"><span class="g-label">흙 수분</span><span class="g-right"><span class="g-val"></span><span class="g-state"></span></span></div><div class="g-bar"><span class="g-band" style="left:30%;width:45%"></span><i></i></div></div>
+    <div class="gauge" id="g-h"><div class="g-head"><span class="g-label">습도</span><span class="g-right"><span class="g-val"></span><span class="g-state"></span></span></div><div class="g-bar"><span class="g-band" style="left:60%;width:40%"></span><i></i></div></div>
+    <div class="gauge" id="g-u"><div class="g-head"><span class="g-label">영양</span><span class="g-right"><span class="g-val"></span><span class="g-state"></span></span></div><div class="g-bar"><span class="g-band" style="left:30%;width:60%"></span><i></i></div></div>
+    <div class="gauge" id="g-health"><div class="g-head"><span class="g-label">건강</span><span class="g-right"><span class="g-val"></span><span class="g-state"></span></span></div><div class="g-bar"><span class="g-band" style="left:65%;width:35%"></span><i></i></div></div>
+  </section>
+
+  <div class="banners" id="banners"></div>
+
+  <nav class="tray" aria-label="돌보기">
+    <button class="act" id="aWater" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h10v8.5a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 4 18.5z"/><path d="M14 12.5l5.5-4.5"/><path d="M18.5 6.5l2 2"/><path d="M6 10V8.5a3 3 0 0 1 6 0V10"/></svg>
+      <span class="lbl">물주기</span>
+    </button>
+    <button class="act" id="aMist" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="10" width="8" height="11" rx="2"/><path d="M8 10V7h4v3"/><path d="M12 7h3.5l1 1.2"/><path d="M19 4.5h.01M21 7h.01M19 9.5h.01M21.2 2.5h.01"/></svg>
+      <span>분무</span>
+    </button>
+    <button class="act" id="aFeed" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3h4v3l2 3v10.5a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 8 19.5V9l2-3z"/><path d="M8 13h8"/></svg>
+      <span>영양제</span><span class="badge" id="feedBadge">0</span>
+    </button>
+    <button class="act" id="aClean" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3.5l1.6 4.2 4.2 1.6-4.2 1.6L11 15.1l-1.6-4.2-4.2-1.6 4.2-1.6z"/><path d="M18 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+      <span>잎 닦기</span>
+    </button>
+    <button class="act" id="aSpot" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="15" rx="1"/><path d="M12 3v15M4 10.5h16M3 21h18"/></svg>
+      <span>자리</span>
+    </button>
+    <button class="act" id="aShop" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+      <span>상점</span>
+    </button>
+  </nav>
+</div>
+
+<div class="sheet-wrap" id="sheetWrap" hidden>
+  <div class="backdrop" id="sheetBackdrop"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-head">
+      <h3 id="sheetTitle"></h3>
+      <button class="icon-btn" id="sheetClose" type="button" aria-label="닫기">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<style>.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ---------- 규칙 ---------- */
+  const KEY = 'monstera-kiugi-v1';
+  const MIN = 60e3, HOUR = 3600e3, DAY = 24 * HOUR;
+  const MAX_LEAVES = 15, POLE_AT = 8, AWAY_MS = 20 * MIN;
+  const SPOTS = {
+    dim:    { name: '어두운 방 구석',   lux: '약 300 lux',    light: 0.35, dry: 1.0, fen: false, burn: false,
+              desc: '흙이 천천히 마르지만 자람이 느리고, 새 잎이 갈라지지 않아요.' },
+    bright: { name: '커튼 친 창가',     lux: '약 2,000 lux',  light: 1.0,  dry: 1.5, fen: true,  burn: false,
+              desc: '밝은 간접광이에요. 몬스테라에게 가장 좋은 자리예요.' },
+    sunny:  { name: '남향 창가 직사광', lux: '약 20,000 lux', light: 1.2,  dry: 2.3, fen: true,  burn: true,
+              desc: '빨리 자라지만 흙이 빨리 마르고, 공기가 건조하면 잎이 타요.' },
+  };
+  const POTS = [
+    { ho: 3,  name: '3호 플라스틱 포트', max: 4,  price: 0 },
+    { ho: 5,  name: '5호 토분',          max: 7,  price: 60 },
+    { ho: 7,  name: '7호 도자기 화분',   max: 11, price: 150 },
+    { ho: 10, name: '10호 대형 화분',    max: 15, price: 300 },
+  ];
+  const PRICE = { feed: 20, pole: 100, humid: 200 };
+  const STAGES = [
+    { no: 1, min: 1,  name: '새싹' },
+    { no: 2, min: 3,  name: '어린 몬스테라' },
+    { no: 3, min: 5,  name: '첫 찢잎' },
+    { no: 4, min: 8,  name: '구멍잎' },
+    { no: 5, min: 11, name: '지지대 타기' },
+    { no: 6, min: 14, name: '대형 몬스테라' },
+  ];
+  const TIPS = [
+    '몬스테라는 밝은 간접광을 좋아해요. 여름 직사광선은 잎을 태울 수 있어요.',
+    '겉흙 2~3cm가 마르면 물을 주세요. 늘 젖어 있으면 뿌리가 썩어요.',
+    '습도 60% 이상에서 잘 자라요. 건조하면 잎에 분무해 주세요.',
+    '어린잎은 갈라짐 없는 하트 모양이에요. 자라면서 잎이 갈라지고 구멍이 생겨요.',
+    '빛이 부족하면 새 잎이 갈라지지 않아요.',
+    '지지대(모스폴)를 타고 오르면 잎이 더 크게 자라요.',
+    '새 잎은 연두색으로 돌돌 말려 나와서 천천히 펴져요.',
+    '줄기에서 나오는 갈색 뿌리는 공기뿌리예요. 지지대를 붙잡는 데 써요.',
+    '잎과 줄기에 옥살산칼슘이 있어요. 반려동물이 씹지 않게 해 주세요.',
+    '비료는 봄·여름 생장기에 주는 게 좋아요.',
+    '뿌리가 배수구 밖으로 나오면 분갈이할 때예요.',
+    '분갈이 직후에는 몸살로 잠시 자람이 멈출 수 있어요.',
+    '잎에 먼지가 쌓이면 빛을 덜 받아요. 젖은 천으로 닦아 주세요.',
+    '뿌리파리는 흙이 계속 젖어 있을 때 잘 생겨요.',
+    '응애는 건조할 때 잘 생겨요. 잎 뒷면을 자주 살펴보세요.',
+  ];
+
+  /* ---------- 도우미 ---------- */
+  const $ = (s) => document.querySelector(s);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const ease = (p) => 1 - Math.pow(1 - p, 3);
+  const rand32 = () => (Math.random() * 4294967296) >>> 0;
+  function rng(seed) {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function todayStr(t = Date.now()) {
+    const d = new Date(t);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function fmtDur(ms) {
+    const m = Math.max(0, Math.round(ms / MIN));
+    const d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = m % 60;
+    if (d) return `${d}일 ${h}시간`;
+    if (h) return `${h}시간 ${mm}분`;
+    return `${mm}분`;
+  }
+  function hexRgb(c, fb) {
+    c = String(c || '').trim().replace('#', '');
+    if (c.length === 3) c = c.split('').map((x) => x + x).join('');
+    if (!/^[0-9a-fA-F]{6}$/.test(c)) return hexRgb(fb || '#336633');
+    const n = parseInt(c, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function mix(a, b, t) {
+    const A = hexRgb(a), B = hexRgb(b);
+    return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`;
+  }
+  function mixHex(a, b, t) {
+    const A = hexRgb(a), B = hexRgb(b);
+    return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+  }
+
+  /* ---------- 상태 ---------- */
+  let state = null;
+  let sheetName = null, lastAway = null, lastFocus = null;
+  let waterConfirmUntil = 0, feedConfirmUntil = 0, resetConfirmUntil = 0;
+  let tipIdx = 0, toastTimer = null;
+
+  function freshState(carry) {
+    const now = Date.now();
+    return {
+      v: 1, startedAt: now, lastTick: now, savedAt: 0,
+      leaves: [{ id: 1, mat: 0, born: now - 4 * HOUR, seed: rand32(), dmg: 0, burn: 0 }], nextId: 2,
+      exp: 0, m: 58, h: 50, u: 60, health: 92, dust: 0, overwet: 0,
+      spot: 'bright', pot: 0, pole: false, humid: carry ? carry.humid : false,
+      coins: carry ? carry.coins : 50, feed: carry ? carry.feed : 2,
+      bugs: [], nextBugId: 1, shockUntil: 0, mistBonusAt: 0,
+      lastCheckin: carry ? carry.lastCheckin : '',
+      gen: carry ? carry.gen + 1 : 1, history: carry ? carry.history : [],
+      done: false, doneShown: false, welcomed: !!carry,
+    };
+  }
+  function migrate(s) {
+    const out = Object.assign(freshState(), s);
+    if (!Array.isArray(out.leaves) || !out.leaves.length) out.leaves = freshState().leaves;
+    if (!Array.isArray(out.bugs)) out.bugs = [];
+    if (!Array.isArray(out.history)) out.history = [];
+    if (!SPOTS[out.spot]) out.spot = 'bright';
+    out.pot = clamp(out.pot | 0, 0, POTS.length - 1);
+    for (const k of ['m', 'h', 'u', 'health', 'dust', 'exp', 'coins', 'feed', 'overwet']) {
+      if (!Number.isFinite(out[k])) out[k] = freshState()[k];
+    }
+    if (!Number.isFinite(out.lastTick) || out.lastTick > Date.now() + DAY) out.lastTick = Date.now();
+    return out;
+  }
+
+  /* ---------- 시뮬레이션 ---------- */
+  const need = (n) => 30 + n * 10;
+  const moistF = (m) => (m < 15 ? 0.2 : m < 30 ? 0.7 : m <= 75 ? 1 : m <= 88 ? 0.8 : 0.4);
+  function growthBlock(s) {
+    if (s.done) return 'done';
+    const n = s.leaves.length;
+    if (n >= POTS[s.pot].max) return 'pot';
+    if (n >= POLE_AT && !s.pole) return 'pole';
+    return null;
+  }
+  function growthRate(s, t) {
+    const sp = SPOTS[s.spot];
+    let g = 6 * sp.light * moistF(s.m)
+      * (0.55 + 0.45 * Math.min(s.u, 60) / 60) * (s.u > 90 ? 0.9 : 1)
+      * (s.h >= 60 ? 1.15 : s.h < 45 ? 0.85 : 1)
+      * (0.3 + 0.7 * s.health / 100)
+      * (1 - s.dust * 0.0025);
+    if (t < s.shockUntil) g *= 0.2;
+    return g;
+  }
+  function maturityFor(i, s) {
+    if (!SPOTS[s.spot].fen || i < 4) return 0;
+    if (i < 7) return 1;
+    if (i < 11) return 2;
+    return s.pole ? 3 : 2;
+  }
+  function addLeaf(s, t, log) {
+    const i = s.leaves.length;
+    s.leaves.push({ id: s.nextId++, mat: maturityFor(i, s), born: t, seed: rand32(), dmg: 0, burn: 0 });
+    const reward = 15 + i * 2;
+    s.coins += reward;
+    log.leaves++; log.coins += reward;
+    if (s.leaves.length >= MAX_LEAVES) { s.done = true; s.exp = 0; }
+  }
+  function addBug(s, type, t, log) {
+    s.bugs.push({ id: s.nextBugId++, type, seed: rand32(), leaf: Math.floor(Math.random() * 997), born: t });
+    log.bugs++;
+  }
+  function step(s, dtH, t, log) {
+    const sp = SPOTS[s.spot];
+    s.m = clamp(s.m - sp.dry * (s.h < 45 ? 1.2 : 1) / (1 + s.pot * 0.15) * dtH, 0, 100);
+    s.overwet = s.m > 88 ? s.overwet + dtH : Math.max(0, s.overwet - dtH * 2);
+    const amb = s.humid ? 62 : 40;
+    s.h = amb + (s.h - amb) * Math.exp(-0.35 * dtH);
+    s.u = Math.max(0, s.u - 0.5 * dtH);
+    s.dust = Math.min(100, s.dust + 0.8 * dtH);
+
+    if (s.bugs.length < 6) {
+      if (s.m > 80 && Math.random() < 0.12 * dtH) addBug(s, 'gnat', t, log);
+      if (s.h < 42 && Math.random() < 0.08 * dtH) addBug(s, 'mite', t, log);
+    }
+
+    let dh = 0;
+    if (s.m < 15) dh -= 3; else if (s.m < 25) dh -= 1;
+    if (s.m > 88) dh -= 2;
+    if (s.overwet > 6) dh -= 2;
+    if (s.u < 10) dh -= 1;
+    if (s.u > 92) dh -= 1.5;
+    const burning = sp.burn && s.h < 45;
+    if (burning) dh -= 1;
+    dh -= 0.8 * s.bugs.length;
+    const fine = dh === 0;
+    if (fine) dh = 2.5;
+    s.health = clamp(s.health + dh * dtH, 0, 100);
+
+    const n = s.leaves.length;
+    if (!fine && n) {
+      const L = s.leaves[Math.floor(Math.random() * n)];
+      L.dmg = Math.min(1, L.dmg + (-dh) * dtH * 0.01);
+    }
+    if (burning && n) {
+      const L = s.leaves[Math.floor(Math.random() * n)];
+      L.burn = Math.min(1, L.burn + 0.03 * dtH);
+    }
+    if (fine && s.health > 80) {
+      for (const L of s.leaves) { L.dmg = Math.max(0, L.dmg - 0.01 * dtH); L.burn = Math.max(0, L.burn - 0.006 * dtH); }
+    }
+
+    if (!growthBlock(s)) {
+      s.exp += growthRate(s, t) * dtH;
+      if (s.exp >= need(n)) { s.exp -= need(n); addLeaf(s, t, log); }
+    } else if (!s.done) {
+      s.exp = Math.min(s.exp, need(n));
+    }
+  }
+  function advance(s, to, log) {
+    let t = s.lastTick;
+    if (!(to > t)) return;
+    t = Math.max(t, to - 14 * DAY);
+    while (t < to) {
+      const dt = Math.min(to - t, HOUR / 6);
+      t += dt;
+      step(s, dt / HOUR, t, log);
+    }
+    s.lastTick = to;
+  }
+  const newLog = () => ({ leaves: 0, coins: 0, bugs: 0 });
+
+  /* ---------- 저장 ---------- */
+  let localOk = true, cloudRef = null, saveMode = 'local', dirty = false, saveTimer = null, chain = Promise.resolve();
+  function loadLocal() {
+    try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; }
+    catch (e) { localOk = false; return null; }
+  }
+  function saveLocal() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); localOk = true; }
+    catch (e) { localOk = false; }
+    if (!cloudRef) saveMode = localOk ? 'local' : 'none';
+  }
+  function markDirty() {
+    state.savedAt = Date.now();
+    saveLocal();
+    dirty = true;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flushCloud, 1500);
+  }
+  function flushCloud() {
+    clearTimeout(saveTimer); saveTimer = null;
+    if (!cloudRef || !dirty) return;
+    dirty = false;
+    const ref = cloudRef;
+    const body = { v: 1, savedAt: state.savedAt, state: JSON.parse(JSON.stringify(state)) };
+    chain = chain.then(() => ref.set(body)).catch((err) => {
+      const code = err && err.code;
+      if (code === 'unavailable') { dirty = true; saveTimer = setTimeout(flushCloud, 2500 + Math.random() * 2000); return; }
+      cloudRef = null; saveMode = localOk ? 'local' : 'none'; renderUI();
+    });
+  }
+  async function connectCloud() {
+    try {
+      const c = window.claude;
+      if (!c || typeof c.use !== 'function') return;
+      const [db, user] = await Promise.all([c.use('db'), c.use('user')]);
+      if (!db || !user) return;
+      const id = await user.id();
+      if (!id) return;
+      const ref = db.doc('data/users/' + id + '/save');
+      const snap = await ref.get();
+      cloudRef = ref; saveMode = 'cloud';
+      const body = snap.exists ? snap.data() : null;
+      const remoteAt = body && Number.isFinite(body.savedAt) ? body.savedAt : 0;
+      if (body && body.state && remoteAt > (state.savedAt || 0)) {
+        adoptRemote(body.state);
+        toast('계정에 저장된 몬스테라를 불러왔어요.');
+      } else if ((state.savedAt || 0) > remoteAt) {
+        dirty = true; flushCloud();
+      }
+      renderUI();
+    } catch (e) {
+      cloudRef = null; saveMode = localOk ? 'local' : 'none'; renderUI();
+    }
+  }
+  function adoptRemote(remote) {
+    state = migrate(JSON.parse(JSON.stringify(remote)));
+    const gap = Date.now() - state.lastTick, log = newLog();
+    advance(state, Date.now(), log);
+    leafCache.clear();
+    saveLocal();
+    if (gap > AWAY_MS && state.welcomed) showAway(gap, log);
+  }
+
+  /* ---------- 돌보기 ---------- */
+  function commit() { markDirty(); renderUI(); if (sheetName) renderSheet(); }
+
+  function doWater() {
+    const s = state, now = Date.now();
+    if (s.m >= 75 && now > waterConfirmUntil) {
+      waterConfirmUntil = now + 4000;
+      toast('흙이 아직 축축해요. 그래도 주려면 한 번 더 누르세요.', 'warn');
+      renderUI();
+      return;
+    }
+    waterConfirmUntil = 0;
+    const before = s.m;
+    s.m = Math.min(100, s.m + 45);
+    fx('water');
+    if (before < 35) {
+      s.coins += 2;
+      if (!s.done) s.exp += 6;
+      toast('딱 좋을 때 물을 줬어요. 코인 +2');
+    } else if (s.m > 88) {
+      toast('흙이 질척해요. 한동안 물을 주지 마세요.', 'bad');
+    } else {
+      toast('물을 줬어요.');
+    }
+    commit();
+  }
+  function doMist() {
+    const s = state, now = Date.now();
+    s.h = Math.min(95, s.h + 18);
+    if (now - s.mistBonusAt > 2 * HOUR && !s.done) { s.mistBonusAt = now; s.exp += 2; }
+    fx('mist');
+    toast(`분무했어요. 습도 ${Math.round(s.h)}%`);
+    commit();
+  }
+  function doFeed() {
+    const s = state, now = Date.now();
+    if (s.feed <= 0) { toast('영양제가 없어요. 상점에서 살 수 있어요.', 'warn'); openSheet('shop'); return; }
+    if (s.u > 85 && now > feedConfirmUntil) {
+      feedConfirmUntil = now + 4000;
+      toast('영양이 이미 충분해요. 그래도 주려면 한 번 더 누르세요.', 'warn');
+      return;
+    }
+    feedConfirmUntil = 0;
+    s.feed--;
+    s.u = Math.min(100, s.u + 35);
+    fx('feed');
+    if (s.u > 92) toast('비료가 너무 많아요. 잎끝이 탈 수 있어요.', 'bad');
+    else toast(`영양제를 줬어요. 영양 ${Math.round(s.u)}%`);
+    commit();
+  }
+  function doClean() {
+    const s = state;
+    if (s.dust < 15) { toast('잎이 깨끗해요.'); return; }
+    const r = Math.floor(s.dust / 20) + 1;
+    s.coins += r; s.dust = 0;
+    fx('clean');
+    toast(`잎을 닦았어요. 코인 +${r}`);
+    commit();
+  }
+  function setSpot(k) {
+    if (!SPOTS[k] || state.spot === k) { closeSheet(); return; }
+    state.spot = k;
+    toast(`${SPOTS[k].name}로 옮겼어요.`);
+    commit();
+    closeSheet();
+  }
+  function buy(item) {
+    const s = state;
+    const pay = (price) => { if (s.coins < price) { toast('코인이 부족해요.', 'warn'); return false; } s.coins -= price; return true; };
+    if (item === 'feed') {
+      if (!pay(PRICE.feed)) return;
+      s.feed++;
+      toast('영양제를 1병 샀어요.');
+    } else if (item === 'pole') {
+      if (s.pole || !pay(PRICE.pole)) return;
+      s.pole = true;
+      fx('sparkle');
+      toast('모스폴 지지대를 세웠어요. 줄기가 타고 오를 거예요.');
+    } else if (item === 'pot') {
+      const nx = s.pot + 1;
+      if (nx >= POTS.length || !pay(POTS[nx].price)) return;
+      s.pot = nx;
+      s.shockUntil = Date.now() + 6 * HOUR;
+      s.m = Math.max(s.m, 55);
+      fx('sparkle');
+      toast(`${POTS[nx].name}로 분갈이했어요. 6시간 동안 몸살을 앓아요.`);
+    } else if (item === 'humid') {
+      if (s.humid || !pay(PRICE.humid)) return;
+      s.humid = true;
+      s.h = Math.max(s.h, 62);
+      toast('가습기를 켰어요. 습도가 62% 안팎으로 유지돼요.');
+    }
+    commit();
+  }
+  function claimDaily() {
+    const s = state, d = todayStr();
+    if (s.lastCheckin === d) return;
+    s.lastCheckin = d;
+    s.coins += 30; s.feed += 1;
+    fx('sparkle');
+    toast('출석 보상을 받았어요. 코인 30, 영양제 1병');
+    commit();
+  }
+  function catchBug(id) {
+    const s = state, i = s.bugs.findIndex((b) => b.id === id);
+    if (i < 0) return;
+    const b = s.bugs[i];
+    s.bugs.splice(i, 1);
+    s.coins += 3;
+    toast(`${b.type === 'gnat' ? '뿌리파리' : '응애'}를 잡았어요. 코인 +3`);
+    commit();
+  }
+  function catchAll() {
+    const n = state.bugs.length;
+    if (!n) return;
+    state.coins += 3 * n;
+    state.bugs = [];
+    toast(`해충 ${n}마리를 모두 잡았어요. 코인 +${3 * n}`);
+    commit();
+  }
+  function newGeneration() {
+    const s = state;
+    const history = s.history.concat([{ gen: s.gen, start: s.startedAt, end: Date.now() }]).slice(-20);
+    state = freshState({ coins: s.coins + 50, feed: s.feed, humid: s.humid, lastCheckin: s.lastCheckin, gen: s.gen, history });
+    leafCache.clear();
+    zoom = 0;
+    closeSheet();
+    toast('꺾꽂이한 마디가 새 화분에 자리 잡았어요. 코인 +50');
+    commit();
+  }
+  function doReset() {
+    const now = Date.now();
+    if (now > resetConfirmUntil) { resetConfirmUntil = now + 4000; renderSheet(); setTimeout(() => { if (sheetName === 'info') renderSheet(); }, 4100); return; }
+    resetConfirmUntil = 0;
+    state = freshState();
+    leafCache.clear();
+    zoom = 0;
+    markDirty();
+    renderUI();
+    openSheet('welcome');
+  }
+
+  /* ---------- 진단 ---------- */
+  function diagnose() {
+    const s = state, now = Date.now(), blk = growthBlock(s);
+    const gn = s.bugs.filter((b) => b.type === 'gnat').length, mt = s.bugs.length - gn;
+    if (s.done) return { t: '다 자랐어요! 잎 15장짜리 대형 몬스테라예요.', tone: 'good' };
+    if (s.m < 15) return { t: '흙이 바싹 말랐어요. 잎이 축 처졌어요.', tone: 'bad' };
+    if (s.overwet > 4) return { t: '흙이 계속 젖어 있어요. 뿌리가 숨을 못 쉬어요.', tone: 'bad' };
+    if (mt) return { t: `잎에 응애가 ${mt}마리 붙었어요. 눌러서 잡아 주세요.`, tone: 'bad' };
+    if (gn) return { t: `흙 위로 뿌리파리가 ${gn}마리 날아요. 눌러서 잡아 주세요.`, tone: 'bad' };
+    if (SPOTS[s.spot].burn && s.h < 45) return { t: '직사광선에 잎이 타고 있어요. 습도를 올리거나 자리를 옮겨 주세요.', tone: 'bad' };
+    if (now < s.shockUntil) return { t: '분갈이 몸살 중이에요. 몇 시간 쉬면 다시 자라요.', tone: 'warn' };
+    if (blk === 'pot') return { t: '뿌리가 화분 배수구 밖으로 나왔어요. 분갈이할 때예요.', tone: 'warn' };
+    if (blk === 'pole') return { t: '줄기가 옆으로 쓰러지려 해요. 지지대(모스폴)가 필요해요.', tone: 'warn' };
+    if (s.m < 30) return { t: '겉흙이 말랐어요. 물 줄 때가 됐어요.', tone: 'warn' };
+    if (s.m > 88) return { t: '흙이 질척해요. 한동안 물을 주지 마세요.', tone: 'warn' };
+    if (s.u < 15) return { t: '영양이 부족해요. 영양제를 주세요.', tone: 'warn' };
+    if (s.u > 92) return { t: '비료가 너무 많아요. 잎끝이 탈 수 있어요.', tone: 'warn' };
+    if (s.h < 45) return { t: '공기가 건조해요. 잎에 분무해 주세요.', tone: 'warn' };
+    if (s.dust > 50) return { t: '잎에 먼지가 쌓였어요. 닦아 주세요.', tone: 'warn' };
+    if (s.spot === 'dim') return { t: '빛이 부족해서 새 잎이 갈라지지 않아요.', tone: 'warn' };
+    const newest = s.leaves[s.leaves.length - 1];
+    if (newest && now - newest.born < 3 * HOUR) return { t: '새 잎이 돌돌 말려 나오고 있어요.', tone: 'good' };
+    if (s.health < 65) return { t: '조금 지쳐 있어요. 조건을 맞춰 주면 회복해요.', tone: 'warn' };
+    return { t: '잘 자라고 있어요. 다음 잎을 준비하는 중이에요.', tone: 'good' };
+  }
+  function stageOf(n) { let st = STAGES[0]; for (const x of STAGES) if (n >= x.min) st = x; return st; }
+  function gaugeLevel(k, v) {
+    if (k === 'm') return v < 15 ? ['bad', '바싹 마름'] : v < 30 ? ['warn', '말라감'] : v <= 75 ? ['good', '적당'] : v <= 88 ? ['warn', '축축'] : ['bad', '과습'];
+    if (k === 'h') return v < 42 ? ['warn', '건조'] : v < 60 ? ['ok', '보통'] : ['good', '촉촉'];
+    if (k === 'u') return v < 15 ? ['warn', '부족'] : v <= 90 ? ['good', '적당'] : ['bad', '과다'];
+    return v < 35 ? ['bad', '시듦'] : v < 65 ? ['warn', '지침'] : ['good', '튼튼'];
+  }
+
+  /* ---------- 화면 ---------- */
+  function renderUI() {
+    if (!state) return;
+    const s = state, now = Date.now(), n = s.leaves.length;
+    $('#coins').textContent = s.coins;
+    $('#feedCount').textContent = s.feed;
+    $('#feedBadge').textContent = s.feed;
+    const days = Math.floor((now - s.startedAt) / DAY) + 1;
+    $('#sub').textContent = `함께한 지 ${days}일째 · ${s.gen}세대`;
+    const st = stageOf(n);
+    $('#stageName').textContent = `${st.no}단계 · ${st.name}`;
+    $('#leafCount').textContent = `잎 ${n} / ${MAX_LEAVES}`;
+
+    const blk = growthBlock(s);
+    const pct = s.done ? 100 : clamp((s.exp / need(n)) * 100, 0, 100);
+    $('#growBar').style.width = pct.toFixed(1) + '%';
+    $('#growBarWrap').dataset.blocked = blk && !s.done ? '1' : '0';
+    let sub;
+    if (s.done) sub = '다 자랐어요. 꺾꽂이로 새 몬스테라를 시작할 수 있어요.';
+    else if (blk === 'pot') sub = `화분이 꽉 찼어요 · ${POTS[s.pot].ho}호 화분은 잎 ${POTS[s.pot].max}장까지예요`;
+    else if (blk === 'pole') sub = `지지대가 있어야 ${POLE_AT + 1}번째 잎이 나와요`;
+    else {
+      const rate = growthRate(s, now);
+      const left = need(n) - s.exp;
+      const eta = rate > 0.05 ? fmtDur((left / rate) * HOUR) : '';
+      sub = `다음 잎까지 ${Math.floor(pct)}%` + (eta ? ` · 지금 속도로 약 ${eta}` : ' · 거의 자라지 않아요');
+      if (now < s.shockUntil) sub += ' (분갈이 몸살)';
+    }
+    $('#growSub').textContent = sub;
+
+    for (const k of ['m', 'h', 'u', 'health']) {
+      const v = clamp(s[k], 0, 100), [l, w] = gaugeLevel(k, v), el = $('#g-' + k);
+      el.dataset.l = l;
+      el.querySelector('.g-val').textContent = Math.round(v) + '%';
+      el.querySelector('.g-state').textContent = w;
+      el.querySelector('.g-bar i').style.width = v.toFixed(1) + '%';
+    }
+
+    const sp = SPOTS[s.spot];
+    $('#spotChip').textContent = `${sp.name} · ${sp.lux}`;
+    $('#saveChip').textContent = saveMode === 'cloud' ? '계정에 저장' : saveMode === 'local' ? '이 기기에 저장' : '저장 안 됨';
+    const dg = diagnose();
+    const note = $('#note');
+    note.textContent = dg.t;
+    note.dataset.tone = dg.tone;
+    cv.setAttribute('aria-label', `몬스테라 화분. 잎 ${n}장, ${st.no}단계 ${st.name}. ${dg.t}`);
+
+    $('#aWater').dataset.hint = s.m < 30 ? '1' : '0';
+    $('#aWater .lbl').textContent = now < waterConfirmUntil ? '한 번 더' : '물주기';
+    $('#aMist').dataset.hint = s.h < 45 ? '1' : '0';
+    $('#aFeed').dataset.hint = s.u < 15 ? '1' : '0';
+    $('#aClean').dataset.hint = s.dust > 40 ? '1' : '0';
+
+    renderBanners();
+  }
+  let bannerKey = '';
+  function renderBanners() {
+    const s = state, list = [];
+    if (s.done) list.push(['complete', 'good', '대형 몬스테라 완성', '꺾꽂이하기']);
+    if (s.lastCheckin !== todayStr()) list.push(['daily', 'sun', '오늘 출석 보상 · 코인 30, 영양제 1병', '받기']);
+    if (s.bugs.length) list.push(['bugs', 'bad', `해충 ${s.bugs.length}마리가 있어요`, '모두 잡기']);
+    const blk = growthBlock(s);
+    if (blk === 'pot' && s.pot + 1 < POTS.length) list.push(['shop', 'warn', `분갈이가 필요해요 · ${POTS[s.pot + 1].name} ${POTS[s.pot + 1].price}코인`, '상점']);
+    if (blk === 'pole') list.push(['shop', 'warn', `지지대가 필요해요 · 모스폴 ${PRICE.pole}코인`, '상점']);
+    const shown = list.slice(0, 2);
+    const key = JSON.stringify(shown);
+    if (key === bannerKey) return;
+    bannerKey = key;
+    $('#banners').innerHTML = shown.map(([a, tone, text, go]) =>
+      `<button class="banner" type="button" data-action="${a}" data-tone="${tone}"><span>${text}</span><span class="go">${go}</span></button>`).join('');
+  }
+  function toast(msg, tone) {
+    const el = $('#toast');
+    el.textContent = msg;
+    if (tone) el.dataset.tone = tone; else delete el.dataset.tone;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.hidden = true; }, msg.length > 30 ? 4200 : 2600);
+  }
+
+  /* ---------- 시트 ---------- */
+  const SHEETS = {
+    welcome() {
+      return ['몬스테라 한 마디를 데려왔어요', `
+        <p class="lead">잎 한 장 달린 어린 몬스테라예요. 잎 15장짜리 대형 몬스테라로 키워 보세요.</p>
+        <ul class="rules">
+          <li><b>물</b><span>겉흙이 마르면 주세요. 너무 자주 주면 뿌리가 썩어요.</span></li>
+          <li><b>빛</b><span>밝은 간접광에서 잎이 갈라지고 구멍이 생겨요.</span></li>
+          <li><b>화분·지지대</b><span>화분이 꽉 차면 분갈이하고, 잎이 ${POLE_AT}장을 넘기려면 모스폴이 필요해요.</span></li>
+          <li><b>시간</b><span>앱을 꺼도 시간은 흘러요. 하루 한두 번 들러 주세요.</span></li>
+        </ul>
+        <button class="primary" type="button" data-action="start">키우기 시작</button>`];
+    },
+    shop() {
+      const s = state, rows = [];
+      rows.push(item('영양제 1병', '영양 +35. 출석하면 하루 1병씩 받아요.', `<button class="buy" type="button" data-action="buy" data-item="feed" ${s.coins < PRICE.feed ? 'disabled' : ''}>${PRICE.feed} 코인</button>`));
+      if (s.pot + 1 < POTS.length) {
+        const p = POTS[s.pot + 1];
+        rows.push(item(`${p.name}로 분갈이`, `잎을 ${p.max}장까지 키울 수 있어요. 분갈이하면 6시간 동안 몸살을 앓아요.`, `<button class="buy" type="button" data-action="buy" data-item="pot" ${s.coins < p.price ? 'disabled' : ''}>${p.price} 코인</button>`));
+      } else {
+        rows.push(item(POTS[s.pot].name, '가장 큰 화분을 쓰고 있어요.', '<span class="owned">사용 중</span>'));
+      }
+      rows.push(item('모스폴 지지대', `줄기가 타고 오를 기둥이에요. 잎 ${POLE_AT}장 이후로 자라려면 필요하고, 잎이 더 크게 갈라져요.`, s.pole ? '<span class="owned">설치함</span>' : `<button class="buy" type="button" data-action="buy" data-item="pole" ${s.coins < PRICE.pole ? 'disabled' : ''}>${PRICE.pole} 코인</button>`));
+      rows.push(item('가습기', '습도를 늘 62% 안팎으로 유지해요. 응애가 덜 생기고 더 빨리 자라요.', s.humid ? '<span class="owned">켜 둠</span>' : `<button class="buy" type="button" data-action="buy" data-item="humid" ${s.coins < PRICE.humid ? 'disabled' : ''}>${PRICE.humid} 코인</button>`));
+      return ['상점', `<div class="wallet-line"><span>가진 코인</span><b>${s.coins} 코인 · 영양제 ${s.feed}병</b></div>${rows.join('')}`];
+      function item(title, desc, right) {
+        return `<div class="shop-item"><div class="si-text"><b>${title}</b><span>${desc}</span></div>${right}</div>`;
+      }
+    },
+    spot() {
+      return ['어디에 둘까요?', `<div class="spots">${Object.entries(SPOTS).map(([k, v]) => `
+        <button class="spot-opt" type="button" data-action="spot" data-spot="${k}" aria-pressed="${state.spot === k}">
+          <b>${v.name}</b><span class="lux">${v.lux}</span><span class="desc">${v.desc}</span>
+        </button>`).join('')}</div>`];
+    },
+    info() {
+      const s = state;
+      const hist = s.history.length
+        ? `<ul class="list">${s.history.slice().reverse().map((h) => `<li>${h.gen}세대 · ${fmtDur(h.end - h.start)} 만에 완성 · ${new Date(h.end).toLocaleDateString('ko-KR')}</li>`).join('')}</ul>`
+        : '<p class="muted">아직 다 키운 몬스테라가 없어요.</p>';
+      const saveDesc = saveMode === 'cloud' ? '계정에 저장돼요. 같은 계정으로 열면 다른 기기에서도 이어서 키울 수 있어요.'
+        : saveMode === 'local' ? '이 기기의 브라우저에만 저장돼요.'
+        : '이 화면에서는 저장할 수 없어요. 새로고침하면 처음부터 시작해요.';
+      const armed = Date.now() < resetConfirmUntil;
+      return ['몬스테라 노트', `
+        <h4>키우는 요령</h4><ul class="list">${TIPS.map((t) => `<li>${t}</li>`).join('')}</ul>
+        <h4>지난 몬스테라</h4>${hist}
+        <h4>저장</h4><p class="muted">${saveDesc}</p>
+        <button class="secondary danger" type="button" data-action="reset" data-armed="${armed ? 1 : 0}">${armed ? '한 번 더 누르면 지금 몬스테라가 사라져요' : '처음부터 다시 키우기'}</button>`];
+    },
+    away() {
+      const a = lastAway || { gap: 0, log: newLog() }, s = state;
+      const rows = [
+        ['자리 비운 시간', fmtDur(a.gap)],
+        ['새로 난 잎', a.log.leaves ? `${a.log.leaves}장` : '없음'],
+        ['받은 코인', a.log.coins ? `+${a.log.coins}` : '없음'],
+        ['생긴 해충', a.log.bugs ? `${a.log.bugs}마리` : '없음'],
+        ['지금 흙 수분', `${Math.round(s.m)}%`],
+        ['지금 건강', `${Math.round(s.health)}%`],
+      ];
+      return ['다녀오셨어요', `<ul class="summary">${rows.map(([k, v]) => `<li><span>${k}</span><b>${v}</b></li>`).join('')}</ul>
+        <p class="hand">${diagnose().t}</p><button class="primary" type="button" data-action="close">확인</button>`];
+    },
+    complete() {
+      const s = state;
+      return ['대형 몬스테라가 됐어요', `
+        <p class="lead">${s.gen}세대 몬스테라가 잎 15장까지 자랐어요. 걸린 시간은 ${fmtDur(Date.now() - s.startedAt)}이에요.</p>
+        <p>꺾꽂이하면 줄기 한 마디를 잘라 새 화분에서 다시 키워요. 코인 50을 더 받고, 코인·영양제·가습기는 그대로 가져가요.</p>
+        <button class="primary" type="button" data-action="regrow">꺾꽂이로 새로 키우기</button>
+        <button class="secondary" type="button" data-action="close">조금 더 바라보기</button>`];
+    },
+  };
+  function renderSheet() {
+    if (!sheetName || !SHEETS[sheetName]) return;
+    const [title, html] = SHEETS[sheetName]();
+    $('#sheetTitle').textContent = title;
+    $('#sheetBody').innerHTML = html;
+  }
+  function openSheet(name) {
+    if (!sheetName) lastFocus = document.activeElement;
+    sheetName = name;
+    renderSheet();
+    $('#sheetWrap').hidden = false;
+    const first = $('#sheetBody button:not([disabled])') || $('#sheetClose');
+    try { first.focus({ preventScroll: true }); } catch (e) { /* 포커스를 못 옮겨도 동작에는 지장 없음 */ }
+  }
+  function closeSheet() {
+    if (sheetName === 'welcome' && !state.welcomed) { state.welcomed = true; markDirty(); }
+    sheetName = null;
+    $('#sheetWrap').hidden = true;
+    renderUI();
+    if (lastFocus && typeof lastFocus.focus === 'function') { try { lastFocus.focus({ preventScroll: true }); } catch (e) { /* 무시 */ } }
+  }
+  function showAway(gap, log) { lastAway = { gap, log }; openSheet('away'); }
+  function runAction(a, d) {
+    switch (a) {
+      case 'start': state.welcomed = true; markDirty(); closeSheet(); break;
+      case 'buy': buy(d.item); break;
+      case 'spot': setSpot(d.spot); break;
+      case 'daily': claimDaily(); break;
+      case 'bugs': catchAll(); break;
+      case 'shop': openSheet('shop'); break;
+      case 'complete': openSheet('complete'); break;
+      case 'regrow': newGeneration(); break;
+      case 'reset': doReset(); break;
+      case 'close': closeSheet(); break;
+    }
+  }
+
+  /* ---------- 그리기 ---------- */
+  const cv = $('#cv'), ctx = cv.getContext('2d');
+  let W = 300, H = 300, DPR = 1;
+  const leafCache = new Map();
+  let T = {}, themeKey = '';
+  const reduceMQ = matchMedia('(prefers-reduced-motion: reduce)');
+  let zoom = 0, wig = 0, parts = [], lastTs = 0, lastDraw = 0;
+  let geo = { cx: 0, soilY: 0, S: 1, potW: 0, top: 0 };
+  let bugPos = [], leafHits = [];
+
+  const POT_GEOM = [{ w: 64, h: 58 }, { w: 84, h: 70 }, { w: 104, h: 84 }, { w: 124, h: 98 }];
+  const PET = [46, 74, 100, 126], LEAFL = [60, 88, 116, 146], POLE_H = 300;
+
+  function readTokens() {
+    const cs = getComputedStyle(document.documentElement), g = (n, fb) => cs.getPropertyValue(n).trim() || fb;
+    T = {
+      wall: g('--room-wall', '#DCE5D6'), floor: g('--room-floor', '#CDBA9C'),
+      leaf: g('--leaf', '#2D6943'), leafDeep: g('--leaf-deep', '#1E4B30'), leafNew: g('--leaf-new', '#A3CF5E'),
+    };
+    const k = Object.values(T).join('|');
+    if (k !== themeKey) { themeKey = k; leafCache.clear(); }
+  }
+  function resize() {
+    const r = $('#scene').getBoundingClientRect();
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.max(1, r.width); H = Math.max(1, r.height);
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    leafCache.clear();
+    draw(performance.now() / 1000, 0);
+  }
+  const isNight = (now) => { const h = new Date(now).getHours(); return h < 6 || h >= 19; };
+
+  // 잎 윤곽 (잎자루가 붙는 곳이 원점, 잎끝이 y=-1)
+  const SEGS = [
+    [[0, 0], [0.08, 0.10], [0.20, 0.16], [0.30, 0.12]],
+    [[0.30, 0.12], [0.48, 0.05], [0.56, -0.20], [0.50, -0.42]],
+    [[0.50, -0.42], [0.44, -0.68], [0.20, -0.90], [0, -1]],
+  ];
+  function bez(sg, t) {
+    const u = 1 - t, a = u * u * u, b = 3 * u * u * t, c = 3 * u * t * t, d = t * t * t;
+    return [a * sg[0][0] + b * sg[1][0] + c * sg[2][0] + d * sg[3][0], a * sg[0][1] + b * sg[1][1] + c * sg[2][1] + d * sg[3][1]];
+  }
+  const OUTLINE = (() => {
+    const right = [];
+    for (const sg of SEGS) for (let k = 0; k <= 12; k++) right.push(bez(sg, k / 12));
+    return right.concat(right.slice().reverse().map(([x, y]) => [-x, y]));
+  })();
+  function rayDist(mx, my, dx, dy) {
+    let best = Infinity;
+    for (let i = 0; i < OUTLINE.length; i++) {
+      const [x1, y1] = OUTLINE[i], [x2, y2] = OUTLINE[(i + 1) % OUTLINE.length];
+      const ex = x2 - x1, ey = y2 - y1, den = dx * ey - dy * ex;
+      if (Math.abs(den) < 1e-9) continue;
+      const t = ((x1 - mx) * ey - (y1 - my) * ex) / den, u = ((x1 - mx) * dy - (y1 - my) * dx) / den;
+      if (t > 1e-4 && u >= 0 && u <= 1 && t < best) best = t;
+    }
+    return best;
+  }
+  const SPLIT = { 1: { n: 3, depth: 0.45 }, 2: { n: 5, depth: 0.6 }, 3: { n: 7, depth: 0.72 } };
+
+  function buildLeaf(L, Ldev, p, age, dust) {
+    const R = rng(L.seed * 7 + 13);
+    const Wf = (L.mat === 0 ? 0.84 : 0.96 + L.mat * 0.02) * (0.14 + 0.86 * ease(p));
+    const pad = 4;
+    const w = Math.max(6, Math.ceil(Ldev * Wf * 1.16 + pad * 2)), h = Math.ceil(Ldev * 1.24 + pad * 2);
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const g = c.getContext('2d');
+    const ox = w / 2, oy = pad + Ldev * 1.03;
+    const X = (x) => ox + x * Ldev * Wf, Y = (y) => oy + y * Ldev;
+
+    const path = new Path2D();
+    path.moveTo(X(0), Y(0));
+    for (const sg of SEGS) path.bezierCurveTo(X(sg[1][0]), Y(sg[1][1]), X(sg[2][0]), Y(sg[2][1]), X(sg[3][0]), Y(sg[3][1]));
+    for (let i = SEGS.length - 1; i >= 0; i--) {
+      const sg = SEGS[i];
+      path.bezierCurveTo(X(-sg[2][0]), Y(sg[2][1]), X(-sg[1][0]), Y(sg[1][1]), X(-sg[0][0]), Y(sg[0][1]));
+    }
+    path.closePath();
+
+    const base = mix(T.leafNew, T.leaf, ease(age));
+    const baseHex = mixHex(T.leafNew, T.leaf, ease(age));
+    const grad = g.createLinearGradient(X(-0.5), Y(-1), X(0.5), Y(0.1));
+    grad.addColorStop(0, mix(baseHex, T.leafNew, 0.22));
+    grad.addColorStop(1, base);
+    g.fillStyle = grad;
+    g.fill(path);
+
+    g.save();
+    g.clip(path);
+    const cfg = SPLIT[L.mat];
+    const nV = cfg ? cfg.n : 4;
+    g.strokeStyle = mix(baseHex, T.leafNew, 0.55);
+    g.globalAlpha = 0.6;
+    g.lineWidth = Math.max(1, Ldev * 0.016);
+    g.beginPath(); g.moveTo(X(0), Y(0.04)); g.lineTo(X(0), Y(-0.96)); g.stroke();
+    g.globalAlpha = 0.35;
+    g.lineWidth = Math.max(0.6, Ldev * 0.007);
+    for (const sd of [-1, 1]) {
+      for (let k = 1; k <= nV; k++) {
+        const f = k / (nV + (cfg ? 0 : 1)), v = -0.08 - f * 0.8, th = 0.35 + f * 0.75;
+        const dx = sd * Math.cos(th), dy = -Math.sin(th), dm = rayDist(0, v, dx, dy);
+        if (!isFinite(dm)) continue;
+        g.beginPath(); g.moveTo(X(0), Y(v)); g.lineTo(X(dx * dm * 0.92), Y(v + dy * dm * 0.92)); g.stroke();
+      }
+    }
+    g.globalAlpha = 1;
+    const R2 = rng(L.seed + 99);
+    const blot = (col, alpha, count, tipBias) => {
+      for (let q = 0; q < count; q++) {
+        const idx = tipBias ? Math.floor(OUTLINE.length / 2 + (R2() - 0.5) * 14) : Math.floor(R2() * OUTLINE.length);
+        const [px, py] = OUTLINE[clamp(idx, 0, OUTLINE.length - 1)];
+        const cx = X(px * 0.86), cy = Y(py * 0.92), rr = Ldev * (0.12 + R2() * 0.1);
+        const rg = g.createRadialGradient(cx, cy, 0, cx, cy, rr);
+        rg.addColorStop(0, `rgba(${col},${alpha})`);
+        rg.addColorStop(1, `rgba(${col},0)`);
+        g.fillStyle = rg;
+        g.fillRect(cx - rr, cy - rr, rr * 2, rr * 2);
+      }
+    };
+    if (L.dmg > 0.03) blot('222,196,72', Math.min(0.9, L.dmg * 0.9), 4, false);
+    if (L.burn > 0.03) blot('118,72,34', Math.min(0.9, L.burn * 0.95), 3, true);
+    if (dust > 5) { g.fillStyle = `rgba(168,160,140,${Math.min(0.42, dust * 0.0042)})`; g.fillRect(0, 0, w, h); }
+    const gl = g.createLinearGradient(X(-0.4), Y(-0.95), X(0.25), Y(-0.2));
+    gl.addColorStop(0, 'rgba(255,255,255,0.16)');
+    gl.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gl;
+    g.fillRect(0, 0, w, h);
+    g.restore();
+
+    // 찢어진 틈과 구멍
+    if (cfg) {
+      g.globalCompositeOperation = 'destination-out';
+      g.fillStyle = '#000';
+      for (const sd of [-1, 1]) {
+        for (let k = 0; k < cfg.n; k++) {
+          const f = (k + 0.5) / cfg.n, v = -0.08 - f * 0.8, th = 0.35 + f * 0.75;
+          const dx = sd * Math.cos(th), dy = -Math.sin(th), dm = rayDist(0, v, dx, dy);
+          const skip = L.mat === 1 && R() < 0.25;
+          const depth = cfg.depth + (R() - 0.5) * 0.14;
+          if (!isFinite(dm) || skip) continue;
+          const din = dm * (1 - depth), gap = 0.016 + 0.007 * L.mat, px = -dy, py = dx;
+          const ix = dx * din, iy = v + dy * din, ox2 = dx * (dm + 0.12), oy2 = v + dy * (dm + 0.12);
+          g.beginPath();
+          g.moveTo(X(ix + px * gap * 0.6), Y(iy + py * gap * 0.6));
+          g.lineTo(X(ox2 + px * gap * 1.5), Y(oy2 + py * gap * 1.5));
+          g.lineTo(X(ox2 - px * gap * 1.5), Y(oy2 - py * gap * 1.5));
+          g.lineTo(X(ix - px * gap * 0.6), Y(iy - py * gap * 0.6));
+          g.closePath();
+          g.fill();
+          g.beginPath(); g.arc(X(ix), Y(iy), Math.max(0.8, gap * 0.6 * Ldev * Wf), 0, Math.PI * 2); g.fill();
+          if (L.mat >= 2 && R() < 0.85) {
+            const hd = din * (L.mat === 3 ? 0.58 : 0.5), hx = dx * hd, hy = v + dy * hd;
+            const rx = (L.mat === 3 ? 0.05 : 0.038) * Ldev * Wf, ry = (L.mat === 3 ? 0.022 : 0.017) * Ldev;
+            g.beginPath(); g.ellipse(X(hx), Y(hy), rx, ry, Math.atan2(dy, dx * Wf), 0, Math.PI * 2); g.fill();
+            if (L.mat === 3 && R() < 0.6) {
+              const h2 = din * 0.25;
+              g.beginPath(); g.ellipse(X(dx * h2), Y(v + dy * h2), rx * 0.55, ry * 0.7, Math.atan2(dy, dx * Wf), 0, Math.PI * 2); g.fill();
+            }
+          }
+        }
+      }
+      g.globalCompositeOperation = 'source-over';
+    }
+    return { c, ox, oy };
+  }
+  function getLeaf(L, Lpx, p, now) {
+    const Ldev = Math.max(6, Math.round((Lpx * DPR) / 3) * 3);
+    const age = clamp((now - L.born) / (48 * HOUR), 0, 1);
+    const key = `${Ldev}|${Math.round(p * 30)}|${Math.round(L.dmg * 8)}|${Math.round(L.burn * 8)}|${Math.round(state.dust / 12)}|${Math.round(age * 8)}|${L.mat}|${themeKey}`;
+    const hit = leafCache.get(L.id);
+    if (hit && hit.key === key) return hit;
+    const r = buildLeaf(L, Ldev, p, age, state.dust);
+    r.key = key;
+    leafCache.set(L.id, r);
+    return r;
+  }
+
+  function layout(s, now, t, S, cx, soilY, still) {
+    const n = s.leaves.length, items = [];
+    const stemH = s.pole ? Math.min(POLE_H * 0.82, 20 * n) : 0;
+    const calm = still || reduceMQ.matches;
+    for (let i = 0; i < n; i++) {
+      const L = s.leaves[i], R = rng(L.seed);
+      const j1 = R() - 0.5, j2 = R() - 0.5, j3 = R();
+      const r = n > 1 ? (n - 1 - i) / (n - 1) : 0;
+      const side = i % 2 === 0 ? -1 : 1;
+      const p = clamp((now - L.born) / (3 * HOUR), 0, 1), pe = ease(p);
+      let ax, ay, a;
+      if (s.pole) {
+        ax = cx + side * 4 * S; ay = soilY - stemH * S * ((i + 1) / n);
+        a = side * (0.45 + 0.8 * r) + j1 * 0.25;
+      } else {
+        ax = cx + side * 3 * S + j2 * 5 * S; ay = soilY - 3 * S - i * 1.4 * S;
+        a = side * (0.16 + 1.05 * r) + j1 * 0.3;
+      }
+      if (!calm) a += Math.sin(t * 0.8 + (L.seed % 628) / 100) * 0.022 * (0.5 + r) + wig * Math.sin(t * 14 + i) * 0.07;
+      const P = PET[L.mat] * (0.85 + 0.3 * j3) * (s.pole ? 0.72 : 1) * (0.45 + 0.55 * pe) * S;
+      const ex = ax + Math.sin(a) * P, ey = ay - Math.cos(a) * P;
+      const qx = ax + Math.sin(a * 0.5) * P * 0.55, qy = ay - Math.cos(a * 0.5) * P * 0.55;
+      const axis = a + side * (0.18 + 0.62 * r) + j2 * 0.2;
+      const Lpx = (LEAFL[L.mat] + i * 1.2) * S * (0.5 + 0.5 * pe);
+      items.push({ L, ax, ay, qx, qy, ex, ey, axis, Lpx, p, r, side });
+    }
+    return { items, stemH };
+  }
+  function targetZoom(s, now, cx, groundY, S0) {
+    const pot = POT_GEOM[s.pot];
+    const soilY0 = groundY - pot.h * S0 * (1 - 0.16 * 0.42);
+    const { items } = layout(s, now, 0, S0, cx, soilY0, true);
+    let minY = soilY0 - pot.h * S0 * 0.2, maxDx = (pot.w * S0) / 2;
+    for (const it of items) {
+      const tx = it.ex + Math.sin(it.axis) * it.Lpx, ty = it.ey - Math.cos(it.axis) * it.Lpx;
+      minY = Math.min(minY, ty, it.ey - it.Lpx * 0.35);
+      maxDx = Math.max(maxDx, Math.abs(tx - cx) + it.Lpx * 0.3, Math.abs(it.ex - cx) + it.Lpx * 0.5);
+    }
+    if (s.pole) minY = Math.min(minY, soilY0 - POLE_H * 0.9 * S0);
+    const needUp = groundY - minY, availUp = groundY - Math.max(H * 0.14, 46);
+    const availSide = Math.min(cx, W - cx) - 4;
+    return clamp(Math.min(availUp / needUp, availSide / maxDx), 0.25, 1.35);
+  }
+
+  function drawRoom(now, t) {
+    const s = state, sp = s.spot, night = isNight(now);
+    const floorY = H * 0.76;
+    ctx.fillStyle = T.wall; ctx.fillRect(0, 0, W, floorY);
+    ctx.fillStyle = T.floor; ctx.fillRect(0, floorY, W, H - floorY);
+    ctx.fillStyle = 'rgba(0,0,0,0.10)'; ctx.fillRect(0, floorY - 5, W, 5);
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)'; ctx.lineWidth = 1;
+    for (let k = 1; k < 5; k++) { const y = floorY + ((H - floorY) * k) / 5; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    if (sp !== 'dim') {
+      const wx = Math.max(14, W * 0.06), wy = H * 0.1, ww = Math.min(W * 0.36, 190), wh = Math.min(H * 0.5, 260);
+      if (!night && sp === 'sunny') {
+        ctx.fillStyle = 'rgba(255,212,110,0.26)';
+        ctx.beginPath(); ctx.moveTo(wx + ww * 0.1, floorY); ctx.lineTo(wx + ww * 1.1, floorY); ctx.lineTo(wx + ww * 2.1, H); ctx.lineTo(wx + ww * 0.6, H); ctx.closePath(); ctx.fill();
+      }
+      const sky = ctx.createLinearGradient(0, wy, 0, wy + wh);
+      if (night) { sky.addColorStop(0, '#0E1B30'); sky.addColorStop(1, '#22365A'); }
+      else if (sp === 'sunny') { sky.addColorStop(0, '#9ED3F0'); sky.addColorStop(1, '#E6F4FB'); }
+      else { sky.addColorStop(0, '#B9DCEB'); sky.addColorStop(1, '#EAF4F7'); }
+      ctx.fillStyle = sky; ctx.fillRect(wx, wy, ww, wh);
+      if (night) {
+        const R = rng(7); ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        for (let k = 0; k < 14; k++) ctx.fillRect(wx + R() * ww, wy + R() * wh * 0.7, 1.4, 1.4);
+      } else if (sp === 'sunny') {
+        ctx.fillStyle = 'rgba(255,236,170,0.95)';
+        ctx.beginPath(); ctx.arc(wx + ww * 0.72, wy + wh * 0.24, Math.min(ww, wh) * 0.1, 0, Math.PI * 2); ctx.fill();
+      }
+      if (sp === 'bright') {
+        ctx.fillStyle = night ? 'rgba(230,236,240,0.28)' : 'rgba(255,255,255,0.55)';
+        ctx.fillRect(wx, wy, ww, wh);
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 1;
+        for (let x = wx + 8; x < wx + ww; x += 10) {
+          ctx.beginPath(); ctx.moveTo(x, wy);
+          for (let y = wy; y <= wy + wh; y += 12) ctx.lineTo(x + Math.sin((y - wy) / 12) * 2, y);
+          ctx.stroke();
+        }
+      }
+      ctx.strokeStyle = '#F2F0E8'; ctx.lineWidth = 6; ctx.strokeRect(wx, wy, ww, wh);
+      ctx.lineWidth = 4; ctx.beginPath();
+      ctx.moveTo(wx + ww / 2, wy); ctx.lineTo(wx + ww / 2, wy + wh); ctx.moveTo(wx, wy + wh / 2); ctx.lineTo(wx + ww, wy + wh / 2); ctx.stroke();
+      ctx.fillStyle = '#E4E1D7'; ctx.fillRect(wx - 8, wy + wh + 2, ww + 16, 7);
+      if (!night) {
+        const a = sp === 'sunny' ? 0.16 : 0.09;
+        const gr = ctx.createLinearGradient(wx + ww, wy, wx + ww * 2.2, floorY);
+        gr.addColorStop(0, `rgba(255,250,225,${a})`); gr.addColorStop(1, 'rgba(255,250,225,0)');
+        ctx.fillStyle = gr;
+        ctx.beginPath(); ctx.moveTo(wx + ww, wy + 10); ctx.lineTo(wx + ww, wy + wh); ctx.lineTo(wx + ww * 2.6, H); ctx.lineTo(wx + ww * 2.6, floorY * 0.7); ctx.closePath(); ctx.fill();
+      }
+    }
+    if (s.humid) {
+      const hx = W * 0.87, hy = H * 0.93, hw = Math.max(20, W * 0.06), hh = hw * 1.5;
+      ctx.fillStyle = 'rgba(0,0,0,0.15)'; ctx.beginPath(); ctx.ellipse(hx, hy, hw * 0.7, hw * 0.16, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#F3F3EE'; ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1;
+      ctx.beginPath(); rrect(hx - hw / 2, hy - hh, hw, hh, hw * 0.3); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#7FB7D6'; ctx.fillRect(hx - hw * 0.18, hy - hh * 0.45, hw * 0.36, 3);
+      const calm = reduceMQ.matches;
+      for (let k = 0; k < 4; k++) {
+        const f = calm ? k / 4 : ((t * 0.35 + k / 4) % 1);
+        ctx.fillStyle = `rgba(235,242,246,${0.55 * (1 - f)})`;
+        ctx.beginPath(); ctx.arc(hx + Math.sin(f * 6 + k) * 4, hy - hh - 6 - f * hh * 1.6, 3 + f * 9, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+  function rrect(x, y, w, h, r) {
+    if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h);
+  }
+  function drawPot(cx, groundY, S, idx, m) {
+    const g = POT_GEOM[idx], w = g.w * S, h = g.h * S, top = groundY - h, rimH = h * 0.16, bw = w * 0.76;
+    const pal = [['#3A403C', '#22272A', '#2E3431'], ['#C27A54', '#9B5737', '#B06A46'], ['#F1F0EA', '#C9C8C0', '#E4E3DB'], ['#4A504D', '#2A2F2D', '#3C4240']][idx];
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.beginPath(); ctx.ellipse(cx, groundY, w * 0.55, Math.max(3, h * 0.07), 0, 0, Math.PI * 2); ctx.fill();
+    const gr = ctx.createLinearGradient(cx - w / 2, 0, cx + w / 2, 0);
+    gr.addColorStop(0, pal[1]); gr.addColorStop(0.35, pal[0]); gr.addColorStop(1, pal[1]);
+    ctx.fillStyle = gr;
+    ctx.beginPath();
+    ctx.moveTo(cx - (w / 2) * 0.96, top + rimH); ctx.lineTo(cx + (w / 2) * 0.96, top + rimH);
+    ctx.lineTo(cx + bw / 2, groundY); ctx.lineTo(cx - bw / 2, groundY); ctx.closePath(); ctx.fill();
+    if (idx === 0) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1;
+      for (let k = -3; k <= 3; k++) { ctx.beginPath(); ctx.moveTo(cx + k * w * 0.12, top + rimH); ctx.lineTo(cx + k * bw * 0.12, groundY); ctx.stroke(); }
+    }
+    if (idx === 3) {
+      const R = rng(31); ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      for (let k = 0; k < 40; k++) { const yy = top + rimH + R() * (h - rimH), sp = (w / 2) * (1 - ((yy - top) / h) * 0.24); ctx.fillRect(cx + (R() - 0.5) * 2 * sp * 0.92, yy, 1.2, 1.2); }
+    }
+    ctx.fillStyle = pal[2];
+    ctx.beginPath(); rrect(cx - w / 2, top, w, rimH, Math.min(4, rimH / 2)); ctx.fill();
+    ctx.fillStyle = mix('#8E6C4F', '#3B2A1D', clamp(m / 100, 0, 1));
+    const soilY = top + rimH * 0.42;
+    ctx.beginPath(); ctx.ellipse(cx, soilY, (w / 2) * 0.9, rimH * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    return { top, rimH, soilY, w };
+  }
+  function drawTag(x, y, S, potIdx) {
+    const fs = Math.max(10, 12 * S);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-0.12);
+    ctx.font = `700 ${fs}px Gaegu, "Gowun Dodum", sans-serif`;
+    const label = `몬스테라 · ${POTS[potIdx].ho}호`;
+    const tw = ctx.measureText(label).width + fs * 0.9, th = fs * 1.5;
+    ctx.fillStyle = '#F6F3E8';
+    ctx.fillRect(-tw * 0.06, -th * 0.2, tw * 0.12, th * 0.9);
+    ctx.beginPath(); rrect(-tw / 2, -th * 1.2, tw, th, 3); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#2B3A30';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(label, 0, -th * 0.7);
+    ctx.restore();
+  }
+
+  function draw(t, dt) {
+    if (!state || !T.wall) return;
+    const s = state, now = Date.now(), n = s.leaves.length, calm = reduceMQ.matches;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    drawRoom(now, t);
+
+    const S0 = H / 600, cx = W * 0.56, groundY = H * 0.95;
+    const tz = targetZoom(s, now, cx, groundY, S0);
+    zoom = zoom ? zoom + (tz - zoom) * Math.min(1, dt * 2.5) : tz;
+    const S = S0 * zoom;
+    const potInfo = drawPot(cx, groundY, S, s.pot, s.m);
+    const soilY = potInfo.soilY;
+
+    if (s.pole) {
+      const pw = 12 * S, ph = POLE_H * 0.9 * S, px = cx + 2 * S - pw / 2, py = soilY - ph;
+      ctx.fillStyle = '#6E5B3C'; ctx.beginPath(); rrect(px, py, pw, ph, pw / 2); ctx.fill();
+      const R = rng(5); ctx.strokeStyle = 'rgba(120,150,70,0.55)'; ctx.lineWidth = 1;
+      for (let k = 0; k < 70; k++) {
+        const yy = py + R() * ph, xx = px + R() * pw;
+        ctx.beginPath(); ctx.moveTo(xx, yy); ctx.lineTo(xx + (R() - 0.5) * 5, yy - R() * 4); ctx.stroke();
+      }
+    }
+
+    const { items, stemH } = layout(s, now, t, S, cx, soilY, false);
+    if (s.pole && n) {
+      ctx.strokeStyle = T.leafDeep; ctx.lineWidth = Math.max(2, 5 * S); ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(cx, soilY);
+      for (let k = 1; k <= n; k++) ctx.lineTo(cx + (k % 2 ? 3 : -3) * S, soilY - stemH * S * (k / n));
+      ctx.stroke();
+      ctx.strokeStyle = '#C9B98F'; ctx.lineWidth = Math.max(1, 1.4 * S);
+      for (let k = 1; k <= Math.min(4, Math.floor(n / 3)); k++) {
+        const yy = soilY - stemH * S * (k / 4.5);
+        ctx.beginPath(); ctx.moveTo(cx - 8 * S, yy); ctx.lineTo(cx + 10 * S, yy + 3 * S); ctx.stroke();
+      }
+    }
+    if (n >= 5) {
+      ctx.strokeStyle = '#7B5A3C'; ctx.lineWidth = Math.max(1, 1.8 * S); ctx.lineCap = 'round';
+      const roots = Math.min(3, Math.floor((n - 3) / 2));
+      for (let k = 0; k < roots; k++) {
+        const sd = k % 2 ? 1 : -1;
+        const sx = cx + sd * 3 * S, sy = s.pole ? soilY - stemH * S * (0.25 + 0.22 * k) : soilY - 4 * S;
+        const exx = sx + sd * (18 + 12 * k) * S, eyy = s.pole ? sy + 30 * S : soilY + 14 * S;
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(sx + sd * 14 * S, sy + 4 * S, exx, eyy); ctx.stroke();
+      }
+    }
+    for (const it of items) {
+      ctx.strokeStyle = T.leafDeep; ctx.lineCap = 'round';
+      ctx.lineWidth = Math.max(1.2, (2.2 + it.L.mat * 0.9) * S);
+      ctx.beginPath(); ctx.moveTo(it.ax, it.ay); ctx.quadraticCurveTo(it.qx, it.qy, it.ex, it.ey); ctx.stroke();
+    }
+    leafHits = [];
+    let plantTop = soilY;
+    for (const it of items) {
+      const lf = getLeaf(it.L, it.Lpx, it.p, now);
+      ctx.save();
+      ctx.translate(it.ex, it.ey);
+      ctx.rotate(it.axis);
+      ctx.drawImage(lf.c, -lf.ox / DPR, -lf.oy / DPR, lf.c.width / DPR, lf.c.height / DPR);
+      ctx.restore();
+      const mx = it.ex + Math.sin(it.axis) * it.Lpx * 0.5, my = it.ey - Math.cos(it.axis) * it.Lpx * 0.5;
+      leafHits.push({ x: mx, y: my, r: Math.max(18, it.Lpx * 0.45), it });
+      plantTop = Math.min(plantTop, it.ey - Math.cos(it.axis) * it.Lpx);
+    }
+    geo = { cx, soilY, S, potW: potInfo.w, top: plantTop };
+    drawTag(cx - potInfo.w * 0.22, potInfo.top + potInfo.rimH * 1.6, S, s.pot);
+
+    bugPos = [];
+    for (const b of s.bugs) {
+      const ph = (b.seed % 1000) / 159;
+      let x, y;
+      if (b.type === 'gnat') {
+        x = calm ? cx + Math.cos(ph) * 30 * S : cx + Math.cos(t * 1.2 + ph) * 30 * S + Math.sin(t * 3.1 + ph * 2) * 6 * S;
+        y = calm ? soilY - 30 * S : soilY - 24 * S - Math.abs(Math.sin(t * 1.7 + ph)) * 26 * S;
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.beginPath(); ctx.ellipse(x - 2, y - 2, 2.4, 1.3, -0.6, 0, Math.PI * 2); ctx.ellipse(x + 2, y - 2, 2.4, 1.3, 0.6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#1E1E1A'; ctx.beginPath(); ctx.ellipse(x, y, 2.2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+      } else {
+        if (!items.length) continue;
+        const it = items[b.leaf % items.length], R = rng(b.seed);
+        const mx = it.ex + Math.sin(it.axis) * it.Lpx * 0.5, my = it.ey - Math.cos(it.axis) * it.Lpx * 0.5;
+        x = mx + (R() - 0.5) * it.Lpx * 0.3; y = my + (R() - 0.5) * it.Lpx * 0.3;
+        ctx.fillStyle = '#B33A2A';
+        for (let k = 0; k < 5; k++) { ctx.beginPath(); ctx.arc(x + (R() - 0.5) * 9, y + (R() - 0.5) * 9, 1.4, 0, Math.PI * 2); ctx.fill(); }
+      }
+      const pulse = calm ? 0.5 : (Math.sin(t * 4 + ph) + 1) / 2;
+      ctx.strokeStyle = `rgba(200,60,50,${0.35 + 0.35 * pulse})`; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(x, y, 9 + pulse * 3, 0, Math.PI * 2); ctx.stroke();
+      bugPos.push({ id: b.id, x, y });
+    }
+
+    drawParts(dt);
+    if (s.spot === 'dim') {
+      const vg = ctx.createRadialGradient(cx, H * 0.55, Math.min(W, H) * 0.2, cx, H * 0.55, Math.max(W, H) * 0.75);
+      vg.addColorStop(0, 'rgba(0,0,0,0.05)'); vg.addColorStop(1, 'rgba(0,0,0,0.38)');
+      ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    }
+    if (isNight(now)) { ctx.fillStyle = 'rgba(10,18,36,0.22)'; ctx.fillRect(0, 0, W, H); }
+  }
+
+  function fx(kind) {
+    if (reduceMQ.matches) return;
+    const { cx, soilY, S, potW, top } = geo, R = Math.random;
+    if (kind === 'water') for (let k = 0; k < 22; k++) parts.push({ k: 'drop', x: cx + (R() - 0.5) * potW * 0.8, y: soilY - (90 + R() * 80) * S, vy: 220 + R() * 140, life: 1.2 });
+    if (kind === 'mist') for (let k = 0; k < 26; k++) parts.push({ k: 'mist', x: cx + (R() - 0.5) * W * 0.55, y: top + (soilY - top) * R(), r: 2 + R() * 3, life: 1.4, max: 1.4 });
+    if (kind === 'feed') for (let k = 0; k < 16; k++) parts.push({ k: 'spark', x: cx + (R() - 0.5) * potW * 0.7, y: soilY - R() * 10 * S, vy: -(30 + R() * 40), life: 1.2, max: 1.2, col: '157,209,90' });
+    if (kind === 'clean' || kind === 'sparkle') {
+      for (let k = 0; k < 18; k++) {
+        const h = leafHits[Math.floor(R() * leafHits.length)];
+        const x = h ? h.x + (R() - 0.5) * h.r : cx + (R() - 0.5) * 80, y = h ? h.y + (R() - 0.5) * h.r : soilY - 60;
+        parts.push({ k: 'spark', x, y, vy: -(10 + R() * 20), life: 1, max: 1, col: kind === 'clean' ? '255,255,255' : '255,214,110' });
+      }
+    }
+  }
+  function drawParts(dt) {
+    if (!parts.length) return;
+    for (const p of parts) {
+      p.life -= dt;
+      if (p.k === 'drop') {
+        p.y += p.vy * dt;
+        if (p.y > geo.soilY) p.life = 0;
+        ctx.fillStyle = 'rgba(110,175,230,0.85)';
+        ctx.beginPath(); ctx.ellipse(p.x, p.y, 1.6, 3.6, 0, 0, Math.PI * 2); ctx.fill();
+      } else if (p.k === 'mist') {
+        const f = 1 - p.life / p.max;
+        ctx.fillStyle = `rgba(225,238,245,${0.6 * (1 - f)})`;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * (1 + f * 2), 0, Math.PI * 2); ctx.fill();
+      } else {
+        p.y += p.vy * dt;
+        const a = clamp(p.life / p.max, 0, 1), r = 2.5 * a + 0.5;
+        ctx.fillStyle = `rgba(${p.col},${a})`;
+        ctx.beginPath(); ctx.moveTo(p.x, p.y - r * 2); ctx.lineTo(p.x + r * 0.6, p.y); ctx.lineTo(p.x, p.y + r * 2); ctx.lineTo(p.x - r * 0.6, p.y); ctx.closePath(); ctx.fill();
+      }
+    }
+    parts = parts.filter((p) => p.life > 0);
+  }
+
+  function frame(ts) {
+    requestAnimationFrame(frame);
+    if (document.hidden) { lastTs = ts; return; }
+    if (ts - lastDraw < 33) return;
+    const dt = lastTs ? clamp((ts - lastTs) / 1000, 0, 0.1) : 0;
+    lastTs = ts; lastDraw = ts;
+    wig = Math.max(0, wig - dt * 1.2);
+    draw(ts / 1000, dt);
+  }
+  function onCanvasTap(e) {
+    const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    let best = null, bd = 30;
+    for (const b of bugPos) { const d = Math.hypot(b.x - x, b.y - y); if (d < bd) { bd = d; best = b; } }
+    if (best) { catchBug(best.id); return; }
+    for (const h of leafHits) {
+      if (Math.hypot(h.x - x, h.y - y) < h.r) { wig = 1; toast(TIPS[tipIdx++ % TIPS.length]); return; }
+    }
+  }
+
+  /* ---------- 시간 흐름 ---------- */
+  function tick() {
+    if (!state) return;
+    const now = Date.now(), gap = now - state.lastTick, log = newLog();
+    advance(state, now, log);
+    if (gap > AWAY_MS) {
+      if (state.welcomed && sheetName !== 'welcome') showAway(gap, log);
+    } else if (log.leaves) {
+      toast(`새 잎이 나왔어요! 코인 +${log.coins}`);
+      fx('sparkle');
+    } else if (log.bugs) {
+      toast('해충이 생겼어요. 화면에서 눌러 잡아 주세요.', 'warn');
+    }
+    if (state.done && !state.doneShown && state.welcomed && !sheetName) {
+      state.doneShown = true; markDirty(); openSheet('complete');
+    }
+    renderUI();
+  }
+
+  /* ---------- 시작 ---------- */
+  function bindUI() {
+    $('#aWater').addEventListener('click', doWater);
+    $('#aMist').addEventListener('click', doMist);
+    $('#aFeed').addEventListener('click', doFeed);
+    $('#aClean').addEventListener('click', doClean);
+    $('#aSpot').addEventListener('click', () => openSheet('spot'));
+    $('#aShop').addEventListener('click', () => openSheet('shop'));
+    $('#spotChip').addEventListener('click', () => openSheet('spot'));
+    $('#btnInfo').addEventListener('click', () => openSheet('info'));
+    $('#banners').addEventListener('click', (e) => { const b = e.target.closest('[data-action]'); if (b) runAction(b.dataset.action, b.dataset); });
+    $('#sheetBody').addEventListener('click', (e) => { const b = e.target.closest('[data-action]'); if (b && !b.disabled) runAction(b.dataset.action, b.dataset); });
+    $('#sheetClose').addEventListener('click', closeSheet);
+    $('#sheetBackdrop').addEventListener('click', closeSheet);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheetName) closeSheet(); });
+    cv.addEventListener('pointerdown', onCanvasTap);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { if (dirty) { saveLocal(); flushCloud(); } }
+      else tick();
+    });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTokens);
+    new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+    new ResizeObserver(resize).observe($('#scene'));
+  }
+  function boot(data) {
+    let s = null, fromHot = false;
+    if (data && data.state && typeof data.state === 'object') { s = data.state; fromHot = true; }
+    if (!s) s = loadLocal();
+    state = s ? migrate(s) : freshState();
+    if (!localOk) saveMode = 'none';
+    const gap = Date.now() - state.lastTick, log = newLog();
+    advance(state, Date.now(), log);
+    readTokens();
+    bindUI();
+    resize();
+    renderUI();
+    if (!state.welcomed) openSheet('welcome');
+    else if (!fromHot && gap > AWAY_MS) showAway(gap, log);
+    else if (state.done && !state.doneShown) { state.doneShown = true; openSheet('complete'); }
+    requestAnimationFrame(frame);
+    setInterval(tick, 1000);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { readTokens(); renderUI(); });
+    try {
+      const hot = window.claude && window.claude.hot;
+      if (hot && typeof hot.snapshot === 'function') hot.snapshot(() => ({ state: JSON.parse(JSON.stringify(state)) }));
+    } catch (e) { /* 미리보기 밖에서는 없음 */ }
+    connectCloud();
+  }
+  let booted = false;
+  const start = (data) => { if (booted) return; booted = true; boot(data || {}); };
+  try {
+    const hot = window.claude && window.claude.hot;
+    if (hot && typeof hot.ready === 'function') { hot.ready(start); setTimeout(() => start({}), 1500); }
+    else start((hot && hot.data) || {});
+  } catch (e) {
+    start({});
+  }
+})();
+</script>
+
+</body>
+</html>
